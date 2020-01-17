@@ -20,7 +20,7 @@ app.use((req, res, next)=>{
 
 
 app.get('/', (req, res, next)=>{
-    res.send('hello');
+    res.send('hello daa');
 });//toimii silloin kun tulee get-pyyntö
 
 app.get('/TEST', (req, res, next)=>{
