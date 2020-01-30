@@ -8,11 +8,24 @@ const session = require("express-session");
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
+const note_schema = new Schema({
+    text: {
+        type: String,
+        required: true
+    }
+});
+const note_model = new mongoose.model('note', note_schema);
+
 const user_schema = new Schema({
     name: {
         type: String,
         required: true
-    }
+    },
+    notes: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'note',
+        req: true
+    }]
 });
 const user_model = mongoose.model("user", user_schema);
 
@@ -62,23 +75,56 @@ app.use((req,res,next) =>{
     user_model.findById(req.session.user._id).then((user)=>{
         req.user = user; //tietokantaobjekti
         next();
+    }).catch((err) => {
+        console.log(err);
+        res.redirect('/login');
     });
 });
 
 app.get("/", is_logged_handler, (req,res,next)=>{
     const user=req.user;
-    res.write(`
-    <html>
-    <body>
-        Logged in as user: ${user.name}
-        <form action="/logout" method="POST">
-            <button type="submit">Log out</button>
-        </form>
-        
-    </body>
-    </html>
-    `);
-    res.end();
+    user.populate('notes').execPopulate().then(()=>{
+        console.log('user: ', user);
+        res.write(`
+        <html>
+        <body>
+            Logged in as user: ${user.name}
+            <form action="/logout" method="POST">
+                <button type="submit">Log out</button>
+            </form>`);
+            user.notes.forEach((note) => {
+                res.write(note.text);
+            });
+    
+            res.write(`
+            <form action="/add-note" method="POST">
+                <input type="text" name="note">
+                <button type="submit">Add note</button>
+            </form>
+    
+            
+        </body>
+        </html>
+        `);
+        res.end();
+
+    });
+    
+});
+
+app.post("/add-note", (req,res,next)=>{
+    const user = req.user;
+
+    let new_note = note_model({
+        text: req.body.note
+    });
+    new_note.save().then(()=>{
+        console.log("note saved");
+        user.notes.push(new_note);
+        user.save().then(()=>{
+            return res.redirect("/");
+        });      
+    });
 });
 
 app.post("/logout", (req,res,next)=>{
@@ -140,7 +186,8 @@ app.post("/register", (req,res,next)=>{
         }
 
         let new_user= new user_model({
-            name: user_name
+            name: user_name,
+            notes: []
         });
 
         new_user.save().then(()=>{
