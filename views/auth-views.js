@@ -1,5 +1,4 @@
-
-const login_view = () =>{
+const login_view = () => {
     let html = `
     <html>
     <body>
@@ -7,15 +6,14 @@ const login_view = () =>{
             <input type="text" name="user_name">
             <button type="submit">Log in</button>
         </form>
-
         <form action="/register" method="POST">
             <input type="text" name="user_name">
             <button type="submit">Register</button>
         </form>
     </body>
-    </html>
+    <html>
     `;
-    
+
     return html;
 }
 

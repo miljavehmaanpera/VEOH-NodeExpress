@@ -1,0 +1,12 @@
+get-metodilla haetaan
+	html-tiedosto, miltä sivu näyttää
+
+post-metodilla luodaan
+	mitä tapahtuu kun painaa nappia
+
+use-metodi käydään läpi kaikissa tapauksissa (sekä get että post)
+
+public kansioon laitetaan tyylitiedosto ja koodissa app.use(express.static('public'))
+
+
+

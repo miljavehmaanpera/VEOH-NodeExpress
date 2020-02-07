@@ -37,7 +37,7 @@ app.use((req, res, next)=>{
 
 const is_logged_handler = (req,res,next) => {
     if(! req.session.user){
-        return res.redirect("/login");
+        return res.redirect("/login");   
     }
     next();
 };
@@ -96,13 +96,13 @@ app.post("/login", (req,res,next)=>{
         return res.redirect("/");
     }
     console.log("user name not registered", user);
-    res.redirect("login");
+    res.redirect("/login");
 });
 
 app.post("/register", (req,res,next)=>{
     const user_name=req.body.user_name
-    let user = users.find((name)=>{
-        return user_name == name;
+    let user = users.find((kissa)=>{
+        return user_name == kissa;
     });
     if(user){
         return res.send("User name already registered");
